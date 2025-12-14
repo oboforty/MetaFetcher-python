@@ -1,4 +1,4 @@
-from metcore import mercy
+from metcore import mapper
 from metcore.parsinglib import force_flatten
 from metcore.views import MetaboliteConsistent, MetaboliteDiscovery
 
@@ -11,7 +11,7 @@ def extra_ref(n, opt):
     return set(opt.attr_mul.get(n, []))
 
 
-@mercy.Mapping(MetaboliteConsistent, MetaboliteDiscovery)
+@mapper.Mapping(MetaboliteConsistent, MetaboliteDiscovery)
 def consistent2disco(mapper):
     """
     Maps MetaboliteConsistent to Discovery object
@@ -52,7 +52,7 @@ def consistent2disco(mapper):
     mapper.for_member('attr_other', 'attr_other')
 
 
-@mercy.Mapping(MetaboliteDiscovery, MetaboliteConsistent)
+@mapper.Mapping(MetaboliteDiscovery, MetaboliteConsistent)
 def disco2consistent(mapper):
     """
     Maps Discovery object to Consistent metabolite object

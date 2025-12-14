@@ -2,14 +2,14 @@ import os
 import sys
 from multiprocessing import Process
 
-import toml
-
 from metcore.dal_psycopg import db, migrations
 from edb_builder.run_pipe import run_pipe
 from edb_builder.utils.ding import dingdingding
 from edb_handlers import EDB_SOURCES
 
 from pipebro import SettingWrapper
+
+from metcore.utils import toml_load
 
 
 def _p_build_edb(edb_id):
@@ -23,19 +23,20 @@ def _p_build_edb(edb_id):
 
 if __name__ == "__main__":
     allowed_dbs = set(sys.argv[1:])
-    needs_allow = {'pubchem', 'kegg'}
+    if not allowed_dbs:
+        # KEGG and PubChem are tricky to extract a full DB dump
+        # so they are downloaded separately
+        needs_allow = {'pubchem', 'kegg'}
+        allowed_dbs = EDB_SOURCES - needs_allow
 
-    dbcfg = SettingWrapper(toml.load(os.path.dirname(__file__) + '/../db.toml'))
+    dbcfg = SettingWrapper(toml_load(os.path.dirname(__file__) + '/../db.toml'))
     conn = db.try_connect(dbcfg)
     db.clear_database(conn)
     db.disconnect_db(conn)
 
     procs = []
 
-    for _p_edb in EDB_SOURCES:
-        if _p_edb in needs_allow and not _p_edb in allowed_dbs:
-            continue
-
+    for _p_edb in allowed_dbs:
         proc = Process(target=_p_build_edb, args=(_p_edb,))
         proc.start()
         procs.append(proc)

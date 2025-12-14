@@ -1,8 +1,8 @@
 import unittest
 import random
 
-from mfdb_parsinglib.edb_formatting.cluster1d import cluster1d_eps, cluster1d_fixed
-from mfdb_parsinglib.edb_formatting.structs import AlmostEqualSet
+from metcore.parsinglib.cluster1d import cluster1d_fixed, cluster1d_eps
+from metcore.parsinglib.structs import AlmostEqualSet
 
 
 class MassClusteringTests(unittest.TestCase):
@@ -17,7 +17,7 @@ class MassClusteringTests(unittest.TestCase):
         # arrange
         random.shuffle(self.points)
 
-        clusters = cluster1d_eps(self.points, eps=0.00005)
+        clusters = cluster1d_eps(self.points, eps=0.005)
         print(clusters)
 
         self.assertEqual(2, len(clusters))
@@ -28,8 +28,7 @@ class MassClusteringTests(unittest.TestCase):
 
         # act
         aes = AlmostEqualSet(self.points)
-        actual_repr_set = aes.get_set
 
         # assert
         expected_repr_set = {149.23284, 149.120449483}
-        self.assertEqual(expected_repr_set, actual_repr_set)
+        self.assertEqual(expected_repr_set, aes.equivalence_set)

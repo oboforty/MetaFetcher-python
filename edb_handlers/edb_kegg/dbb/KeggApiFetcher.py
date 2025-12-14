@@ -5,9 +5,8 @@ import time
 
 import aiohttp
 from pipebro import Producer, Process
-from mfdb_parsinglib.apihandlers.api_parsers.keggparser import parse_kegg, parse_kegg_async
 
-
+from edb_handlers.edb_kegg.dbb.parselib import parse_kegg, parse_kegg_async
 
 
 class KeggApiFetcher(Process):

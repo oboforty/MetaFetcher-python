@@ -1,13 +1,13 @@
 import json
-import toml
 import os.path
 import asyncpg
 
 from .. import srv
+from ..utils import toml_load
 
 Repository, get_repo = srv.declare_service_type('Repo', 'T')
 
-dbcfg = toml.load(os.path.dirname(__file__)+"/../../db.toml")
+dbcfg = toml_load(os.path.dirname(__file__)+"/../../db.toml")
 
 single_connection = True
 pool: asyncpg.Pool | None = None
@@ -43,7 +43,7 @@ async def initialize_db(pool_size=None):
     min_size, max_size = pool_size or dbopts.get('pool_size') or (10, 10)
     single_connection = dbopts.get('single_connection', True)
 
-    pool = await asyncpg.create_pool(
+    pool = asyncpg.create_pool(
         **conncfg,
         min_size=min_size,
         max_size=max_size,

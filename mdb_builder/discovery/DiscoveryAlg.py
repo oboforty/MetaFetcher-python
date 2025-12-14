@@ -4,7 +4,7 @@ from typing import Generator
 from edb_handlers import EDBSource, is_edb
 from metcore.parsinglib import depad_id, pad_id
 from metcore.views import MetaboliteConsistent, MetaboliteDiscovery
-from metcore.mercy import map_to
+from metcore.mapper import map_to
 from ..mapping import * # noqa
 
 from .managers.EDBManager import EDBManager

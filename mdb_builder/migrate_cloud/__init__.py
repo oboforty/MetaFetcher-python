@@ -1,4 +1,5 @@
-from import_local_ddb.dbb_item_builder import get_mdb_id, build_mdb_record, build_search_keys, build_mid_search_key
+from mdb_builder.discovery import get_mdb_id
+from mdb_builder.migrate_cloud.dbb_item_builder import build_mdb_record, build_search_keys, build_mid_search_key
 
 
 def build_items_from_discovery(disc: dict):

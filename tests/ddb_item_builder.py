@@ -2,9 +2,11 @@ import unittest
 import random
 from decimal import Decimal
 
-from import_local_ddb.dbb_item_builder import get_primary_name, build_mdb_record, build_search_keys, build_mid_search_key, get_mdb_id
+from mdb_builder.discovery import get_mdb_id
+from mdb_builder.migrate_cloud.dbb_item_builder import get_primary_name, build_mdb_record, build_search_keys, build_mid_search_key
 
 null = None
+
 
 class DDBItemBuilderTests(unittest.TestCase):
     def setUp(self):

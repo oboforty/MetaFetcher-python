@@ -4,7 +4,7 @@ from mdb_builder.discovery.consistency import get_discovery_attribute_consistenc
     ConsistencyClass
 from ..parsinglib import strip_attr, pad_id
 from ..parsinglib.structs import repr_set, AlmostEqualSet, TrimSet, MultiDict
-from .. import mercy
+from .. import mapper
 
 
 @dataclass
@@ -47,7 +47,7 @@ class MetaboliteDiscovery:
                 getattr(self, attr).update(getattr(other, attr))
         else:
             # try to map obj to MetaboliteDiscovery and then merge
-            mapped_obj = mercy.map_to(other, cls_dest=MetaboliteDiscovery)
+            mapped_obj = mapper.map_to(other, cls_dest=MetaboliteDiscovery)
             return self.merge(mapped_obj)
 
     def to_dict(self):
