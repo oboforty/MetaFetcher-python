@@ -1,9 +1,9 @@
 from pipebro import Process
 
-from metcore.parsinglib import preprocess, remap_keys, map_to_edb_format, MultiDict, force_list
+from metcore.parsinglib import preprocess, remap_keys, map_to_edb_format, MultiDict
 
 from edb_handlers import EDB_SOURCES_OTHER, EDB_SOURCES
-from edb_builder.dtypes.MetaboliteExternal import MetaboliteExternal
+from db_dump.dtypes.MetaboliteExternal import MetaboliteExternal
 
 
 class KeggParser(Process):

@@ -1,0 +1,9 @@
+{
+  "chebi__": "./data/dumps/chebi.sdf.gz",
+  "chebi": "./data/dumps/chebi.sdf/chebi.sdf",
+  "hmdb": "./data/dumps/hmdb_metabolites.zip",
+  "lipmaps": "./data/dumps/LMSD.sdf.zip",
+
+  "kegg": "",
+  "pubchem": ""
+}

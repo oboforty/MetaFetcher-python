@@ -4,8 +4,8 @@ from pipebro import pipe_builder
 from pipebro.ProcessImpl import DBSaver as LocalEDBSaver
 
 from edb_builder.utils import PIPECFG_PATH
-from edb_builder.dtypes import MetaboliteExternal
-from edb_builder.process.fileformats.SDFParser import SDFParser
+from db_dump.dtypes import MetaboliteExternal
+from db_dump.process.fileformats.SDFParser import SDFParser
 
 from .PubchemParser import PubchemParser
 

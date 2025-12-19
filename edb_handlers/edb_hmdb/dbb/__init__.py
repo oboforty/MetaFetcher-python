@@ -5,8 +5,8 @@ from pipebro.ProcessImpl import DBSaver as LocalEDBSaver
 
 from .HMDBParser import HMDBParser
 
-from edb_builder.dtypes import MetaboliteExternal, SecondaryID
-from edb_builder.process.fileformats.XMLFastParser import XMLFastParser
+from db_dump.dtypes import MetaboliteExternal, SecondaryID
+from db_dump.process.fileformats.XMLFastParser import XMLFastParser
 from edb_builder.utils import downloads, PIPECFG_PATH
 
 DUMP_DIR = 'db_dumps/'

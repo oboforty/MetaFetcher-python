@@ -1,7 +1,6 @@
-import os.path
 from abc import ABCMeta, abstractmethod
 
-from metcore.utils import toml_load
+from utils import toml_load
 from metcore.views import MetaboliteConsistent
 from pipebro import SettingWrapper
 

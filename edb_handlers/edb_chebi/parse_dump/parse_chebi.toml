@@ -1,0 +1,68 @@
+[meta]
+tags = ['parser', 'dbsave']
+
+[settings]
+chebi_attr_etc = ['quality','chebi_star','lipidmaps_class_id','ch_iupac_name']
+
+[attribute_mapping]
+'chebi id' = 'chebi_id'
+'secondary chebi id' = 'chebi_id_alt'
+
+'chebi name' = 'names'
+'iupac names' = 'names'
+'iupac_name' = 'names'
+'ch_iupac_name' = 'names'
+'synonyms' = 'names'
+'synonym' = 'names'
+
+formulae = 'formula'
+inchi = 'inchi'
+inchikey = 'inchikey'
+smiles = 'smiles'
+
+definition = 'description'
+'kegg compound database links' = 'kegg_id'
+'pubmed citation links' = 'pubmed_id'
+#'cas registry numbers' = 'cas_id'
+
+'pubchem substance database links' = 'pubchem_substance_id'
+'pubchem compound database links' = 'pubchem_id'
+'lipid maps instance database links' = 'lipmaps_instance_id'
+'lipid maps class database links' = 'lipmaps_class_id'
+'lipid maps database links' = 'lipmaps_id'
+
+'virtual metabolic human database links' = 'vmhdb_id'
+'drugbank metabolite database links' = 'drugbank_id'
+'chinese abstracts database links' = 'chinese_abstracts_id'
+'carotenoids database database links' = 'carotenoids_id'
+'carotenoids database links' = 'carotenoids_id'
+'fao/who standards database links' = 'fao_who_id'
+
+"wikipedia" = "wiki_id"
+'wikipedia database links' = 'wiki_id'
+
+#'bkms-react database links' = 'bkms_react_id'
+#'brenda database links' = '_id'
+#'reaxys registry numbers' = 'reaxys_id'
+#'beilstein registry numbers' = 'beilstein_id'
+#'kegg drug database links' = 'kegg_drug_id'
+#'gmelin registry numbers' = 'gmelin_id'
+#'pubmed central database links' = 'pubmed_central_id"
+#'kegg glycan database links' = 'kegg_glycan_id"
+# these are auto-mapped:
+#'pubchem database links' = 'pubchem_id'
+#'hmdb database links' = 'hmdb_id'
+#'chemspider database links' = 'chemspider_id'
+#'pdb database links' = 'pdb_id'
+#'uniprot database links' = 'uniprot_id'
+#'swisslipids database links' = 'swisslipids_id'
+#'drugbank database links' = 'drugbank_id'
+
+star = 'chebi_star'
+chebi_star = 'chebi_star'
+'chebi star' = 'chebi_star'
+charge = 'charge'
+mass = 'mass'
+'monoisotopic mass' = 'mi_mass'
+'monoisotopic_mass' = 'mi_mass'
+

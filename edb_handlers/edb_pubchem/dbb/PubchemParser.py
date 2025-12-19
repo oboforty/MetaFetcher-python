@@ -1,9 +1,10 @@
 from pipebro import Process
-from metcore.parsinglib import preprocess, remap_keys, split_pubchem_ids, map_to_edb_format, MultiDict, \
-    replace_esc, handle_name
 
-from edb_builder.dtypes.MetaboliteExternal import MetaboliteExternal
-from edb_builder.process.bulkparsers.utils import assert_edb_dict
+from edb_builder.utils import assert_edb_dict
+from metcore.parsinglib import preprocess, remap_keys, map_to_edb_format, MultiDict, replace_esc, handle_name
+
+from db_dump.dtypes.MetaboliteExternal import MetaboliteExternal
+
 
 class PubchemParser(Process):
     consumes = MultiDict, "edb_obj"

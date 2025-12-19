@@ -1,8 +1,8 @@
 import unittest
 import random
 
-from metcore.parsinglib.cluster1d import cluster1d_fixed, cluster1d_eps
-from metcore.parsinglib.structs import AlmostEqualSet
+from db_dump.metparselib import cluster1d_eps
+from db_dump.metparselib import AlmostEqualSet
 
 
 class MassClusteringTests(unittest.TestCase):

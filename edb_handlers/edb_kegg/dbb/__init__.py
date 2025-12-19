@@ -4,7 +4,7 @@ from pipebro import pipe_builder
 from pipebro.ProcessImpl import DBSaver as LocalEDBSaver, JSONLinesParser
 
 from edb_builder.utils import PIPECFG_PATH
-from edb_builder.dtypes import MetaboliteExternal, SecondaryID
+from db_dump.dtypes import MetaboliteExternal
 
 from .KeggParser import KeggParser
 

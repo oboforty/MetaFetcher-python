@@ -1,12 +1,10 @@
-import os.path
-
 from pipebro import Process
 
 from metcore.parsinglib import preprocess, remap_keys, map_to_edb_format, MultiDict, force_list
 
 from .parselib import replace_obvious_hmdb_id
 from edb_builder.utils.verify_edb_dict import assert_edb_dict
-from edb_builder.dtypes import MetaboliteExternal, SecondaryID
+from db_dump.dtypes import MetaboliteExternal, SecondaryID
 
 
 _key_mapping = {
