@@ -1,5 +1,4 @@
-from metcore.parsinglib import MultiDict
-
+from db_dump.metparselib.structs import MultiDict
 
 hmdb_id_formats = (
     # padded    - long / short

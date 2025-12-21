@@ -1,8 +1,8 @@
 [meta]
 tags = ['parser', 'dbsave']
 
-[settings]
-chebi_attr_etc = ['quality','chebi_star','lipidmaps_class_id','ch_iupac_name']
+#[settings]
+#chebi_attr_etc = ['quality','chebi_star','lipidmaps_class_id','ch_iupac_name']
 
 [attribute_mapping]
 'chebi id' = 'chebi_id'

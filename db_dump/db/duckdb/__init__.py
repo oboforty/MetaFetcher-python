@@ -107,6 +107,14 @@ class DuckDBBulkInserter:
 
         prog.close()
 
+    def truncate(self, edb_source=None):
+        if edb_source is None:
+            self.con.execute("TRUNCATE TABLE external_metabolites")
+            self.con.execute("TRUNCATE TABLE inverted_idx")
+        else:
+            self.con.execute(f"DELETE FROM external_metabolites WHERE db_source = '{edb_source}'")
+            self.con.execute(f"DELETE FROM inverted_idx WHERE db_source = '{edb_source}'")
+
     def close(self):
         self.con.close()
 
@@ -140,17 +148,19 @@ def pyarrow_batches(dict_iter, batch_size=100000):
             ext_ids = record.get(ref_attr)
             if ext_ids is None:
                 continue
+            ref_source = ref_attr.removesuffix('_id')
 
             if not isinstance(ext_ids, (list, set, tuple)):
                 ext_ids = [ext_ids]
 
             for ext_id in ext_ids:
                 invidx_buffer.append({
+                    "referrer_source": ref_source,
+                    "referrer_id": ext_id,
+
                     "db_source": db_source,
                     "db_id": db_id,
 
-                    "referrer_source": ref_attr,
-                    "referrer_id": ext_id,
                     # TODO: determine if 2ndary index
                 })
 

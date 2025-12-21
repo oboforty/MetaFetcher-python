@@ -49,10 +49,10 @@ class Stats:
             table.append([attr, cnt, self.min_cardinalities[attr], self.max_cardinalities[attr], self.nones[attr]])
         table.append(["Total:", self.total, "", "", ""])
 
-        print("[STATS] Attribute counts:")
         print(tabulate.tabulate(table, headers, tablefmt="fancy_grid"))
 
         print(f"\n took: {round(time.time() - self.t1, 2)} seconds")
+
 
 class RelevantIrrelevantStats:
     def __init__(self):
@@ -61,6 +61,7 @@ class RelevantIrrelevantStats:
 
     def add_stats(self, data):
         irrelevant_keys = set(data.keys()) - INDEXED_ATTRIBUTES
+        irrelevant_keys -= {"db_id", "db_source"}
 
         self.rel.add_stats(data, INDEXED_ATTRIBUTES)
         self.etc.add_stats(data, irrelevant_keys)

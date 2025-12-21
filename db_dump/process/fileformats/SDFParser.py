@@ -1,22 +1,28 @@
 import gzip
+import io
 import os.path
+import zipfile
 from typing import TextIO
 
 
 from db_dump.metparselib.structs import MultiDict
 
 
-def parse_sdf(filepath: str):
+def parse_sdf(filepath: str, parse_options: dict=None):
     _, ext = os.path.splitext(filepath)
 
     # stop_at = self.cfg.get('debug.stop_after', -1, cast=int)
 
     # gzip is CPU bound clib & wrapping it aiofiles/aiogzip slows it down
     if ext == '.gz':
-        print("[Chebi] parsing as gzip")
+        print(f"[SDF] parsing {filepath} as gzip")
         fh_stream: TextIO = gzip.open(filepath, 'rt', encoding='utf8')
+    elif ext == '.zip':
+        print(f"[SDF] parsing {filepath} as zip")
+        archive = zipfile.ZipFile(filepath, 'r')
+        fh_stream: TextIO = io.TextIOWrapper(archive.open(parse_options['compressed_file']), 'utf-8')
     else:
-        print("[Chebi] parsing as raw file")
+        print(f"[SDF] parsing raw {filepath}")
         fh_stream: TextIO = open(filepath, 'r', encoding='utf8')
 
     buffer = MultiDict()

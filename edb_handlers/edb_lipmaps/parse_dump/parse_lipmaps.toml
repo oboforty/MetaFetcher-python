@@ -5,20 +5,20 @@ tags = ['parser', 'dbsave']
 lipidmaps_attr_etc=[]
 
 [attribute_mapping]
-LM_ID = 'lipmaps_id'
-NAME = 'names'
-SYSTEMATIC_NAME = 'names'
-SYNONYMS = 'names'
-ABBREVIATION = 'names'
+lm_id = 'lipmaps_id'
+name = 'names'
+systematic_name = 'names'
+synonyms = 'names'
+abbreviation = 'names'
 
-EXACT_MASS = 'mi_mass'
-INCHI_KEY = 'inchikey'
-PUBCHEM_CID = 'pubchem_id'
+exact_mass = 'mi_mass'
+inchi_key = 'inchikey'
+pubchem_cid = 'pubchem_id'
 pubchem_compound_id = 'pubchem_id'
 
 wikipedia_id = 'wiki_id'
 
-# CATEGORY category
-# MAIN_CLASS main_class
-# SUB_CLASS sub_class
-# CLASS_LEVEL4 = 'lvl4_class'
+# category category
+# main_class main_class
+# sub_class sub_class
+# class_level4 = 'lvl4_class'

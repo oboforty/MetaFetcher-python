@@ -1,44 +1,39 @@
-from pipebro import Process
-
-from metcore.parsinglib import preprocess, remap_keys, map_to_edb_format, MultiDict
-
+from db_dump.process.fileformats.SDFParser import parse_sdf
+from db_dump.metparselib.padding import strip_prefixes
+from db_dump.metparselib.parsinglib import (
+    remap_keys, handle_names, flatten, handle_masses
+)
 from edb_handlers.edb_pubchem.parselib import split_pubchem_ids
-from db_dump.dtypes.MetaboliteExternal import MetaboliteExternal
-from edb_builder.utils import assert_edb_dict
 
 
-class LipidMapsParser(Process):
-    consumes = MultiDict, "edb_obj"
-    produces = MetaboliteExternal, "edb_record"
+class LipidMapsParser:
+    id = 'lipmaps'
 
-    def initialize(self):
+    def __init__(self, cfg):
         self.generated = 0
+        self.cfg = cfg
 
-    async def produce(self, data: MultiDict):
-        _mapping = self.cfg.conf['attribute_mapping']
-        important_attr = self.cfg.get('settings.lipidmaps_attr_etc', cast=set)
+    def parse_file(self, file_path):
+        for dump_dict in parse_sdf(file_path, {'compressed_file': 'structures.sdf'}):
+            for record in self.parse(dump_dict):
+                yield record
 
+    def parse(self, data: dict):
+        _mapping = self.cfg['attribute_mapping']
+
+        molfile = data.pop(None)
         remap_keys(data, _mapping)
 
-        # convert to lower keys
-        for k in list(data.keys()):
-            if k and k[1].isupper():
-                data[k.lower()] = data.pop(k, None)
+        if 'names' in data:
+            handle_names(data)
+        strip_prefixes(data)
+        flatten(data, 'description')
+        handle_masses(data)
 
-        # flattens lists of len=1
-        data, etc = map_to_edb_format(data, important_attr=important_attr)
-        if 'null' in data:
-            data.drop('null', None)
-
-        preprocess(data)
-
+        # TODO: add pubchem substance IDs ?
         sids = split_pubchem_ids(data)
 
-        if self.app.debug:
-            assert_edb_dict(data)
+        data["db_source"] = "lipmaps"
+        data["db_id"] = data["lipmaps_id"]
 
-        self.generated += 1
-        if self.generated % 1000 == 0:
-            self.app.print_progress(self.generated)
-
-        yield MetaboliteExternal(edb_source='lipmaps', **data)
+        yield data
