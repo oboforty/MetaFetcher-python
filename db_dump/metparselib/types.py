@@ -66,13 +66,17 @@ EDB_ID_OTHER = set(map(lambda x: x+'_id', iter(EDB_SOURCES_OTHER)))
 
 EDB_ID = set(map(lambda x: x+'_id', iter(EDB_SOURCES)))
 
+CHEM_FLOAT_PROPERTY = {'mass', 'mi_mass', "charge"}
+CHEM_STRUCT_PROPERTY = {'formula', 'inchi', 'inchikey', 'smiles'}
+CHEM_STRUCT_MULTI_DIM_PROPERTY = {"mol", "mol2d"} # todo: what else?
+
+INDEXED_ATTRIBUTES = EDB_ID | {"names"} | CHEM_STRUCT_PROPERTY | CHEM_FLOAT_PROPERTY | EDB_ID_OTHER
+
 
 COMMON_ATTRIBUTES = {
-    "names", "description",
-    'formula', 'inchi', 'inchikey', 'smiles',
-    'mass', 'mi_mass', "charge"
+    *INDEXED_ATTRIBUTES,
+    "description"
 }
-
 
 def is_edb(reftag: str | tuple[str, str]):
     if isinstance(reftag, tuple) and len(reftag)==2:

@@ -30,3 +30,6 @@ class PrintProgress:
             dt = time.strftime('%H:%M:%S', time.gmtime(time.time() - self.tstart))
 
         print("\r", self.tpl.format(iter=i, spinner=pb, dt=dt, **kwargs), end="")
+
+    def close(self):
+        print("")

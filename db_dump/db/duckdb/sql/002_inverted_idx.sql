@@ -1,4 +1,4 @@
-CREATE TABLE edb_inverted_idx
+CREATE TABLE inverted_idx
 (
     -- primary key pointing to (db_source, db_id)
     -- e.g. CHEBI:27732 = (edb_source='chebi', edb_id='27732')
@@ -13,6 +13,13 @@ CREATE TABLE edb_inverted_idx
     -- is referrer_id a secondary ID (url redirection to a primary compound ID)?
     secondary  BOOLEAN DEFAULT FALSE,
 
-    PRIMARY KEY (referrer_source, referrer_id),
-    FOREIGN KEY (db_source, db_id) REFERENCES external_metabolites (db_source, db_id)
+    -- TODO: investigate primary key: (referrer_id, db_id)
+    PRIMARY KEY (referrer_source, referrer_id, db_source, db_id),
+--     FOREIGN KEY (db_source, db_id) REFERENCES external_metabolites (db_source, db_id)
 );
+
+-- inverted index to external_metabolites
+CREATE INDEX idx_inverted_referrer ON inverted_idx (referrer_source, referrer_id);
+
+-- for inverted lookup
+-- CREATE INDEX idx_inverted_target ON inverted_idx (db_source, db_id);

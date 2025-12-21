@@ -22,11 +22,11 @@ def main():
     args = parser.parse_args()
 
     # setup
-    db = setup_connection("chebi", toml_load(args.database), batch=args.batch)
+    db = setup_connection(toml_load(args.database), batch=args.batch, tables=[
+        'external_metabolites',
+        'inverted_idx',
+    ])
     print("Looking for External IDs: ", EDB_SOURCES)
-
-    # TODO: $ITT: refactor dont use externalDB interface, just pure json and spew out prim & 2ndary indices
-    # TODO: $ITT: bulk insert & commti
 
     t1 = time.time()
     i = 0
@@ -43,6 +43,7 @@ def main():
                 prog.print_progress(i)
             record_stats.add_stats(item)
 
+        prog.close()
         print("---------------------------------------------")
         record_stats.rel.print_statistics()
         print("---------------------------------------------")
