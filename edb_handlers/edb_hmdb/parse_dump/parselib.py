@@ -1,4 +1,5 @@
-from db_dump.metparselib.structs import MultiDict
+from db_dump.parsinglib import MultiDict
+
 
 hmdb_id_formats = (
     # padded    - long / short

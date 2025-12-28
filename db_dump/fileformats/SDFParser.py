@@ -5,7 +5,7 @@ import zipfile
 from typing import TextIO
 
 
-from db_dump.metparselib.structs import MultiDict
+from db_dump.parsinglib import MultiDict
 
 
 def parse_sdf(filepath: str, parse_options: dict=None):

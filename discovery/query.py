@@ -5,7 +5,7 @@ import sys
 import duckdb
 
 
-DB_PATH = os.path.join(os.path.dirname(__file__), "../../data/dumps/edb_dumps.db")
+DB_PATH = os.path.join(os.path.dirname(__file__), "../data/dumps/edb_dumps.db")
 con = duckdb.connect(DB_PATH)
 
 term = sys.argv[1]

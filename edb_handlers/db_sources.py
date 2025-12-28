@@ -1,8 +1,9 @@
 import os
 import pathlib
 from enum import Enum
+from imaplib import Literal
 
-handlers_path = str(pathlib.Path(__file__).parent.parent.parent.joinpath("edb_handlers"))
+handlers_path = str(pathlib.Path(__file__).parent)
 EDB_SOURCES = set(map(lambda x: x[4:], filter(lambda x: x.startswith('edb_'), os.listdir(handlers_path))))
 
 
@@ -72,6 +73,7 @@ CHEM_STRUCT_MULTI_DIM_PROPERTY = {"mol", "mol2d"} # todo: what else?
 
 INDEXED_ATTRIBUTES = EDB_ID | {"names"} | CHEM_STRUCT_PROPERTY | CHEM_FLOAT_PROPERTY | EDB_ID_OTHER
 
+EDB_REF = tuple[str, str] # should really be tuple[Literal[INDEXED_ATTRIBUTES], str]
 
 COMMON_ATTRIBUTES = {
     *INDEXED_ATTRIBUTES,

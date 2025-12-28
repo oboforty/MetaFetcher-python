@@ -1,4 +1,59 @@
 import time
+import os.path
+import sys
+import argparse
+
+
+if sys.version_info > (3, 10):
+    import tomllib
+
+    def toml_load(fn):
+        with open(os.path.abspath(fn), 'rb') as fh:
+            return tomllib.load(fh)
+else:
+    import toml_load
+    toml_load = toml
+
+
+def get_argparser():
+    parser = argparse.ArgumentParser(description="")
+
+    parser.add_argument(
+        "in_file",
+        type=str,
+        help="",
+        required=True
+    )
+    parser.add_argument(
+        "--out",
+        default='./data/dumps/edb_dumps.db',
+        type=str,
+        # default="./data/database_config.toml",
+        help=""
+    )
+    parser.add_argument(
+        "-v", "--verbose",
+        type=bool,
+        action="store_true",
+        default=False,
+        help="Enable verbose output"
+    )
+    parser.add_argument(
+        "--batch",
+        type=int,
+        default=5000,
+        help="Batch size (size of commit when using postgres)"
+    )
+
+    parser.add_argument(
+        "--cardinality",
+        tye=bool,
+        action="store_true",
+        default=False,
+        help="Instead of insertion, does a dry run and collects cardinality statistics"
+    )
+
+    return parser
 
 
 class PrintProgress:

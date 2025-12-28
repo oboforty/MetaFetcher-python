@@ -2,7 +2,6 @@ from abc import ABCMeta, abstractmethod
 
 from utils import toml_load
 from metcore.views import MetaboliteConsistent
-from pipebro import SettingWrapper
 
 
 class ApiClientBase(metaclass=ABCMeta):

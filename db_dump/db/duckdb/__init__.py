@@ -5,22 +5,7 @@ from typing import Iterable
 import pyarrow as pa
 import duckdb
 
-from db_dump.metparselib.types import INDEXED_ATTRIBUTES, EDB_ID, CHEM_FLOAT_PROPERTY, CHEM_STRUCT_PROPERTY, \
-    EDB_ID_OTHER
 from db_dump.utils import PrintProgress
-
-
-# TODO: refactor everything to sub modules
-#
-# def setup(cfg, batch):
-#     db = DuckDBBulkInserter(
-#         file=cfg["edb_file"],
-#         batch=batch,
-#     )
-#     db.setup()
-#
-#     return db
-
 
 SQL_DIR = os.path.join(os.path.dirname(__file__), "sql")
 
@@ -48,18 +33,18 @@ SCHEMA_INVIDX = pa.schema([
 })
 
 
-INDEXED_STR_ATTRIBUTES = EDB_ID | {"names"} | CHEM_STRUCT_PROPERTY | EDB_ID_OTHER
-
 #TODO: handle CHEM_FLOAT_PROPERTY
 #TODO: handle CHEM_MULTI_DIM_PROPERTY
 
+
 class DuckDBBulkInserter:
 
-    def __init__(self, file: str, batch: int, tables: list[str] = None):
+    def __init__(self, file: str, batch: int, tables: list[str] = None, edb_sources=None):
         self.con = duckdb.connect(file)
         self.batch_size = batch
         self.buffer = []
         self.tables = tables
+        self.edb_sources = edb_sources
 
         if not self.tables:
             self.tables = []
@@ -96,7 +81,7 @@ class DuckDBBulkInserter:
     def bulk_insert(self, iterable: Iterable):
         prog = PrintProgress("{dt}sec Inserting (batch: {iter})  {spinner}")
 
-        for b, (insert_type, batch) in enumerate(pyarrow_batches(iterable, batch_size=self.batch_size)):
+        for b, (insert_type, batch) in enumerate(pyarrow_batches(iterable, batch_size=self.batch_size, edb_sources=self.edb_sources)):
             prog.print_progress(b)
 
             if insert_type == INS_INVIDX:
@@ -119,7 +104,7 @@ class DuckDBBulkInserter:
         self.con.close()
 
 
-def pyarrow_batches(dict_iter, batch_size=100000):
+def pyarrow_batches(dict_iter, edb_sources, batch_size=100000):
     record_buffer = []
     invidx_buffer = []
 
@@ -144,7 +129,7 @@ def pyarrow_batches(dict_iter, batch_size=100000):
         # todo: @later -- handle 2ndary (can go to inverted idx table)
 
         # Inverted Index table
-        for ref_attr in INDEXED_STR_ATTRIBUTES:
+        for ref_attr in edb_sources:
             ext_ids = record.get(ref_attr)
             if ext_ids is None:
                 continue
@@ -156,10 +141,10 @@ def pyarrow_batches(dict_iter, batch_size=100000):
             for ext_id in ext_ids:
                 invidx_buffer.append({
                     "referrer_source": ref_source,
-                    "referrer_id": ext_id,
+                    "referrer_id": ext_id.lower(),
 
                     "db_source": db_source,
-                    "db_id": db_id,
+                    "db_id": db_id.lower(),
 
                     # TODO: determine if 2ndary index
                 })

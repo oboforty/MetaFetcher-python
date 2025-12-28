@@ -5,7 +5,7 @@ from typing import IO
 
 from lxml import etree
 
-from db_dump.metparselib.structs import MultiDict
+from db_dump.parsinglib import MultiDict
 
 
 def parse_xml(filepath: str, parse_options: dict):

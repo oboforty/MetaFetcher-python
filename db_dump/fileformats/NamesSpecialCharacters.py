@@ -1,12 +1,10 @@
 import collections
 import string
-from db_dump.metparselib.parsinglib import _REPLACE_CHARS
+from db_dump.parsinglib import _REPLACE_CHARS
 
-from db_dump.dtypes.MetaboliteExternal import MetaboliteExternal
 
 
 class NamesSpecialCharacters:
-    consumes = MetaboliteExternal
 
     def initialize(self):
         self.words = collections.Counter()

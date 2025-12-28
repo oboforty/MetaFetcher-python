@@ -3,8 +3,6 @@ import time
 from typing import Any
 import tabulate
 
-from db_dump.metparselib.types import COMMON_ATTRIBUTES, EDB_ID, EDB_ID_OTHER, INDEXED_ATTRIBUTES
-
 
 class Stats:
 
@@ -55,15 +53,18 @@ class Stats:
 
 
 class RelevantIrrelevantStats:
-    def __init__(self):
+
+    def __init__(self, indexed_attributes):
         self.rel = Stats()
         self.etc = Stats()
 
+        self.indexed_attributes = indexed_attributes
+
     def add_stats(self, data):
-        irrelevant_keys = set(data.keys()) - INDEXED_ATTRIBUTES
+        irrelevant_keys = set(data.keys()) - self.indexed_attributes
         irrelevant_keys -= {"db_id", "db_source"}
 
-        self.rel.add_stats(data, INDEXED_ATTRIBUTES)
+        self.rel.add_stats(data, self.indexed_attributes)
         self.etc.add_stats(data, irrelevant_keys)
 
 def is_primitive(v: Any) -> bool:

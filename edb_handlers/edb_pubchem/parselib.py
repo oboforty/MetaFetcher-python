@@ -1,6 +1,5 @@
-from db_dump.metparselib.padding import strip_attr, get_id_from_url
-from db_dump.metparselib.structs import MultiDict
-from db_dump.metparselib.parsinglib import try_flatten
+
+from db_dump.parsinglib import MultiDict, try_flatten, strip_attr, get_id_from_url
 
 
 def parse_pubchem(edb_id, content, cont_refs, _mapping):

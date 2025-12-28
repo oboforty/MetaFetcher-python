@@ -1,7 +1,6 @@
-from db_dump.process.fileformats.SDFParser import parse_sdf
-from db_dump.metparselib.padding import strip_prefixes
-from db_dump.metparselib.parsinglib import (
-    remap_keys, handle_names, flatten, handle_masses
+from db_dump.fileformats.SDFParser import parse_sdf
+from db_dump.parsinglib import (
+    remap_keys, handle_names, flatten, handle_masses, force_list, strip_prefixes
 )
 from edb_handlers.edb_pubchem.parselib import split_pubchem_ids
 
