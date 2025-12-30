@@ -8,7 +8,7 @@ from metcore.parsinglib import remap_keys, preprocess, map_to_edb_format
 from metcore.views import MetaboliteConsistent
 
 
-class PubchemClient(ApiClientBase):
+class PubchemClient:
     MAPPING_FILE = os.path.join(os.path.dirname(__file__), '..', 'mapping.toml')
 
     _reverse = (

@@ -10,7 +10,7 @@ from metcore.parsinglib import pad_id, map_to_edb_format, preprocess, remap_keys
 from metcore.views import MetaboliteConsistent
 
 
-class HMDBClient(ApiClientBase):
+class HMDBClient:
     MAPPING_FILE = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'dbb', 'parse_hmdb.toml'))
 
     _reverse = (

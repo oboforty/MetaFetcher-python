@@ -2,7 +2,7 @@ import logging
 import sys
 from argparse import ArgumentParser
 
-from discovery.DiscoveryAlg import discover
+from discovery import discover
 
 if __name__ == "__main__":
     parser = ArgumentParser()
@@ -51,13 +51,6 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-
-    if args.options:
-        from db_dump.utils import toml_load
-        options = toml_load(args.options)
-    else:
-        # default options
-        options = None
 
     if args.verbose:
         log_level = logging.DEBUG

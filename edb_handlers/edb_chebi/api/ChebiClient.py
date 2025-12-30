@@ -11,7 +11,7 @@ from metcore.parsinglib import pad_id, MultiDict, remap_keys, preprocess, map_to
 from metcore.views import MetaboliteConsistent
 
 
-class ChebiClient(ApiClientBase):
+class ChebiClient:
     MAPPING_FILE = os.path.join(os.path.dirname(__file__), '..', 'mapping.toml')
 
     _reverse = (

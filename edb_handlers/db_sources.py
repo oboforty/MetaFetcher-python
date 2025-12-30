@@ -1,25 +1,17 @@
 import os
 import pathlib
 from enum import Enum
-from imaplib import Literal
 
 handlers_path = str(pathlib.Path(__file__).parent)
 EDB_SOURCES = set(map(lambda x: x[4:], filter(lambda x: x.startswith('edb_'), os.listdir(handlers_path))))
 
 
-class EDBSource(Enum):
-    # some example types but can be expanded
-    pubchem = 'pubchem'
-    chebi = 'chebi'
-    hmdb = 'hmdb'
-    kegg = 'kegg'
-    lipmaps = 'lipmaps'
-
 # TODO: glycan databases are excluded, but idk if they should be part
 #       glycan, glytoucan, kegg_glycan
 # TODO: same for peptide DBs
 
-#EDBSource = Enum("EDBSource", {x: x for x in EDB_SOURCES})
+# EDBSource = Enum("EDBSource", {x: x for x in EDB_SOURCES})
+
 EDB_SOURCES_OTHER = {
     'cas',
 
@@ -73,8 +65,6 @@ CHEM_STRUCT_MULTI_DIM_PROPERTY = {"mol", "mol2d"} # todo: what else?
 
 INDEXED_ATTRIBUTES = EDB_ID | {"names"} | CHEM_STRUCT_PROPERTY | CHEM_FLOAT_PROPERTY | EDB_ID_OTHER
 
-EDB_REF = tuple[str, str] # should really be tuple[Literal[INDEXED_ATTRIBUTES], str]
-
 COMMON_ATTRIBUTES = {
     *INDEXED_ATTRIBUTES,
     "description"
@@ -95,4 +85,9 @@ def load_edb_handlers(edb_types):
     return h
 
 
-__all__ = ['EDB_SOURCES', 'EDBSource', 'is_edb', 'load_edb_handlers']
+__all__ = [
+    'EDB_SOURCES', "EDB_ID", "EDB_ID_OTHER",
+    "CHEM_STRUCT_MULTI_DIM_PROPERTY", "CHEM_FLOAT_PROPERTY", "CHEM_STRUCT_PROPERTY",
+    "COMMON_ATTRIBUTES", "INDEXED_ATTRIBUTES",
+    'is_edb', 'load_edb_handlers'
+]

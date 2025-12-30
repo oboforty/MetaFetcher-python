@@ -8,7 +8,7 @@ from metcore.parsinglib import pad_id, remap_keys, preprocess, map_to_edb_format
 from metcore.views import MetaboliteConsistent
 
 
-class KeggClient(ApiClientBase):
+class KeggClient:
     MAPPING_FILE = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'dbb', 'parse_kegg.toml'))
 
     url_base = 'https://rest.kegg.jp/get/'

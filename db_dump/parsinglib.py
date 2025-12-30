@@ -58,8 +58,8 @@ class MultiDict(dict):
         else:
             self.append(key, value)
 
-    def update(self, __m, **kwargs) -> None:
-        for k,v in __m.items():
+    def update(self, dict2, **kwargs) -> None:
+        for k,v in dict2.items():
             self.extend(k, v)
 
 

@@ -1,0 +1,38 @@
+[default]
+discoverable = false
+
+[hmdb]
+discoverable = true
+fetch_api = true
+cache_enabled = true
+cache_api_result = false
+
+[chebi]
+discoverable = true
+fetch_api = true
+cache_enabled = true
+cache_api_result = false
+
+[lipmaps]
+discoverable = true
+fetch_api = true
+cache_enabled = true
+cache_api_result = false
+
+[pubchem]
+discoverable = true
+fetch_api = true
+cache_enabled = false # no database dump is assumed
+cache_api_result = false
+
+[kegg]
+discoverable = true
+fetch_api = true
+cache_enabled = false # no database dump is assumed
+cache_api_result = false
+
+[cas]
+discoverable = true
+fetch_api = false
+cache_enabled = false
+cache_api_result = false

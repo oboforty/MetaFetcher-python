@@ -1,0 +1,43 @@
+[default]
+discoverable = true
+fetch_api = false
+cache_enabled = false
+cache_api_result = false
+
+[hmdb]
+discoverable = true
+fetch_api = true
+cache_enabled = true
+cache_api_result = false
+
+[chebi]
+discoverable = true
+fetch_api = true
+cache_enabled = true
+cache_api_result = false
+
+[lipmaps]
+discoverable = true
+fetch_api = true
+cache_enabled = true
+cache_api_result = false
+
+[pubchem]
+# Pubchem in full_discovery mode assumes that the user has inserted a DB dump file
+discoverable = true
+fetch_api = true
+cache_enabled = true
+cache_api_result = false
+
+[kegg]
+# KEGG in full_discovery mode assumes that the user has inserted a DB dump file
+discoverable = true
+fetch_api = true
+cache_enabled = true
+cache_api_result = false
+
+[cas]
+discoverable = true
+fetch_api = false
+cache_enabled = false
+cache_api_result = false
