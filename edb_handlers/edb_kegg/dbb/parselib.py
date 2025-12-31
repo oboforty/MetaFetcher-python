@@ -45,7 +45,7 @@ async def parse_kegg_async(stream):
             data = MultiDict()
 
 
-def parse_kegg_line(line, state, data):
+def parse_kegg_line(line, state, data: MultiDict):
     """
 
     :param line: line to be parsed

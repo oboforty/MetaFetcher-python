@@ -4,6 +4,7 @@ from .alg import DiscoveryAlg, EDB_REF, ExternalAPI, LocalEDB
 from .db import edb_connect
 from .options import DiscoveryOptions
 from .utils.padding import depad_id, pad_id
+from .utils import output
 
 
 def discover(
@@ -47,3 +48,9 @@ def discover(
         runs.append(alg)
 
     return runs
+
+__ALL__ = [
+    'discover', 'output',
+
+    'DiscoveryAlg', 'DiscoveryOptions', 'edp_connect',
+]

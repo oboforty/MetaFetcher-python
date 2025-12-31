@@ -14,25 +14,28 @@ class MetaboliteIndex(UserDict):
 
         if (oldval := self.data.get(key)) is not None:
             # there are multiple entries in buffer, store them in a list
-            if not isinstance(oldval, list):
-                oldval = [oldval]
+            if not isinstance(oldval, set):
+                oldval = {oldval}
                 self.data[key] = oldval
 
-            oldval.append(value)
+            oldval.add(value)
         else:
             self.data[key] = value
 
     def extend(self, key, value: list | set | Iterator):
-        for x in iter_of_type(value):
+        for x in iter_scalars(value):
             self.append(key, x)
 
     def update(self, dict2, **kwargs) -> None:
         for key, value in dict2.items():
-            for x in iter_of_type(value):
+            if key not in self.allowed_keys:
+                continue
+
+            for x in iter_scalars(value):
                 self.append(key, x)
 
 
-def iter_of_type(arr_or_prim):
+def iter_scalars(arr_or_prim):
     """
     Yields either a scalar type or iterates a collection of the same type
     """

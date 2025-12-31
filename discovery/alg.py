@@ -1,8 +1,10 @@
+import datetime
 import queue
+import time
 from sys import meta_path
 from typing import Protocol
 
-from .metabolite import MetaboliteIndex, iter_of_type
+from .metabolite import MetaboliteIndex, iter_scalars
 from .options import DiscoveryOptions
 from .utils.padding import depad_id, pad_id
 
@@ -10,8 +12,10 @@ from logging import getLogger
 
 logger = getLogger("disco")
 
-EDB_REF = tuple[str, str] # should really be tuple[Literal[INDEXED_ATTRIBUTES], str]
+EDB_REF = tuple[str, str]
 QUEUE_ITEM = tuple[EDB_REF, EDB_REF]
+
+SPC = 15
 
 
 class DiscoveryAlg:
@@ -56,25 +60,29 @@ class DiscoveryAlg:
         # main object to aggregate EDB sources
         self.meta: MetaboliteIndex = MetaboliteIndex()
 
+        self.t1: int
+
     def run_discovery(self):
-        logger.debug('Starting discovery.')
+        self.t1 = time.time()
+        logger.debug(f'Starting discovery.')
 
         while not self.Q.empty():
+            # queue guarantees that edb_target already has a scalar ID
             edb_target, edb_referrer = self.Q.get()
 
             # Query metabolite record from local database or web api
-            logger.debug(f"[QUERY] {edb_referrer[0]}:{edb_referrer[1]} => {edb_target[0]}:{edb_target[1]}")
+            logger.debug(f"Discovering: {edb_referrer[0]}:{edb_referrer[1]} => {edb_target[0]}:{edb_target[1]}")
 
             edb_records = self.get_metabolite(edb_target)
 
             if not edb_records:
-                logger.debug(f'[UNDISCOVERED] Manager returned None for EDB ref: {edb_target[0]}:{edb_target[1]}')
+                logger.debug(f'Undiscovered: Manager returned None for EDB ref: {edb_target[0]}:{edb_target[1]}')
 
-                for edb_target_ in iter_of_type(edb_target):
-                    self.undiscovered.add((edb_target[0], edb_target_))
+                for edb_target_id in iter_scalars(edb_target):
+                    self.undiscovered.add((edb_target[0], edb_target_id))
                 continue
 
-            logger.info(f"[DISCOVERED] {edb_referrer[0]}:{edb_referrer[1]} => {edb_target[0]}:{edb_target[1]}")
+            logger.info(f"Discovered: {edb_referrer[0]}:{edb_referrer[1]} => {edb_target[0]}:{edb_target[1]}")
             self.discovered.add(edb_target)
 
             for edb_record in edb_records:
@@ -115,8 +123,7 @@ class DiscoveryAlg:
             if opts.cache_api_result:
                 pass
 
-        result = "Found" if edb_records else "Not found"
-        logger.debug(f"[GET] {edb_source}:{edb_id} -- {result}")
+        logger.debug(f"Query: {len(edb_records)} records for {edb_source}:{edb_id}")
 
         return edb_records
 
@@ -137,18 +144,21 @@ class DiscoveryAlg:
             opts = self.options.get_option(edb_target[0])
 
             if not opts.discoverable or edb_target in self.been_in_queue:
-                for edb_target_ in iter_of_type(edb_target[1]):
-                    undiscovered_entry = (edb_target[0], edb_target_)
-                    if undiscovered_entry not in self.discovered:
-                        logger.debug(f'[UNDISCOVERED] {edb_ref[0]}:{edb_ref[1]} -> {undiscovered_entry[0]}:{undiscovered_entry[1]}')
-                        self.undiscovered.add(undiscovered_entry)
+                for edb_target_id in iter_scalars(edb_target[1]):
+                    edb_target_scalar = (edb_target[0], edb_target_id)
+                    if edb_target_scalar not in self.discovered:
+                        logger.debug(f'Undiscovered: {edb_ref[0]}:{edb_ref[1]} -> {edb_target_scalar[0]}:{edb_target_scalar[1]}')
+                        self.undiscovered.add(edb_target_scalar)
                 continue
 
-            logger.debug(f'[DISCOVERED] Found novel ID: {edb_id_tuple[0]} in {edb_ref[0]}:{edb_ref[1]} -> {edb_target[0]}:{edb_target[1]}')
+            logger.debug(f'Found novel ID: {edb_id_tuple[0]} in {edb_ref[0]}:{edb_ref[1]} -> {edb_target[0]}:{edb_target[1]}')
 
-            self.Q.put((edb_target, edb_ref))
-            for edb_target_ in iter_of_type(edb_target[1]):
-                self.been_in_queue.add((edb_target[0], edb_target_))
+            for edb_target_id in iter_scalars(edb_target[1]):
+                edb_target_scalar = (edb_target[0], edb_target_id)
+
+                self.Q.put((edb_target_scalar, edb_ref))
+                self.been_in_queue.add(edb_target_scalar)
+
             found_new = True
 
         return found_new
@@ -165,11 +175,12 @@ class DiscoveryAlg:
         # todo: @later: clear and return an object representing all the data
         #self.clear()
 
-        logger.debug("Discovery finished! --------\n")
+        dt = time.time() - self.t1
+        logger.debug(f"Discovery finished! Took {round(dt)}s --------\n")
 
     def set_input(self, record_input: dict):
         self.meta = MetaboliteIndex(record_input)
-        self.meta.allowed_keys = self.options.discoverable_attributes
+        self.meta.allowed_keys = self.options.result_attributes
 
         edb_ref_input: EDB_REF = ("root_input", "-")
         self.enqueue_novel_ids(edb_ref_input, record_input)

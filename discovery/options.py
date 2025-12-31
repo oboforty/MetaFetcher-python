@@ -1,7 +1,10 @@
 import dataclasses
+import os.path
+import pathlib
 
 from db_dump.utils import toml_load
-from edb_handlers.db_sources import EDB_ID, EDB_ID_OTHER, CHEM_STRUCT_PROPERTY
+from edb_handlers.db_sources import EDB_ID, EDB_ID_OTHER, CHEM_STRUCT_PROPERTY, INDEXED_ATTRIBUTES, EDB_SOURCES, \
+    EDB_SOURCES_OTHER
 
 import logging
 
@@ -10,41 +13,33 @@ logger = logging.getLogger("disco")
 
 @dataclasses.dataclass
 class Opt:
-    discoverable: bool = False
+    edb_source: str
+
+    # if enabled, will keep this attribute in the result.
     keep_in_result: bool = False
+
+    # allows to fetch from DB's API. will yield an error if API Client is not implemented for this external DB!
     fetch_api: bool = False
+
+    # allows to fetch from the `.db` cache external database dump files. This option assumes that the user has inserted a DB dump file!
     cache_enabled: bool = False
+
+    # if an API entry was found, saves it to the `.db` cache, if this option is enabled
     cache_api_result: bool = False
 
+    @property
+    def discoverable(self) -> bool:
+        return self.fetch_api or self.cache_enabled
 
-DEFAULT_OPT = {
-    "default": dict(
-        discoverable = True,
-        fetch_api = True,
-        cache_enabled = True,
-        cache_api_result = False,
-    ),
-    # TODO: ITT: auto include everything?
-    "names": dict(
-        discoverable = False,
-    )
-}
+    def __repr__(self):
+        return (
+            f"keep_in_result:     {self.keep_in_result}\n"
+            f"fetch_api:          {self.fetch_api}\n"
+            f"cache_enabled:      {self.cache_enabled}\n"
+            f"cache_api_result:   {self.cache_api_result}\n"
+        )
 
-for attr in EDB_ID:
-    DEFAULT_OPT[attr] = dict(
-        discoverable=True,
-        fetch_api=True,
-        cache_enabled=True,
-        cache_api_result=False,
-    )
-
-for attr in EDB_ID_OTHER | CHEM_STRUCT_PROPERTY:
-    DEFAULT_OPT[attr] = dict(
-        discoverable=True,
-        fetch_api=False,
-        cache_enabled=True,
-        cache_api_result=False,
-    )
+DEFAULT_OPT_FILE = str(pathlib.Path(__file__).parent.joinpath("profiles/full_discovery.toml"))
 
 
 class DiscoveryOptions:
@@ -57,19 +52,21 @@ class DiscoveryOptions:
         if options:
             self.disc = _to_options(options)
         else:
-            self.disc = _to_options(DEFAULT_OPT)
+            self.disc = _to_options(DEFAULT_OPT_FILE)
 
-        self.discoverable_attributes: set[str] = set()
+        # self.discoverable_attributes: set[str] = set()
         self.result_attributes: set[str] = set()
 
-        for key, opt in self.disc.items():
-            if opt.discoverable:
-                self.discoverable_attributes.add(key)
+        # TODO: this won't account for many EDB specific attributes!
+        for key in INDEXED_ATTRIBUTES:
+            opt = self.get_option(key)
             if opt.keep_in_result:
                 self.result_attributes.add(key)
 
-        format_detail = '%(asctime)s %(levelname)s: %(message)s'
-        formatter = logging.Formatter(format_detail)
+        formatter = logging.Formatter(
+            '%(asctime)s %(message)s',
+            "%Y-%m-%d %H:%M:%S"
+        )
 
         # TODO: how to reset loggers? where to call it?
         _logger = logging.getLogger('disco')
@@ -89,24 +86,36 @@ class DiscoveryOptions:
             _logger.addHandler(stream_handler)
             # logger.addHandler(logging.StreamHandler(sys.stdout))
 
-        logger.debug(
-            "Settings:\n"
-            f"Result attributes: {', '.join(self.result_attributes)}\n"
-        )
-        # it's good to leave this in the non-verbose log too:
+        options_str = []
+        for key, opt in self.disc.items():
+            options_str.append(f'[{key}]\n{opt}')
+
         logger.info(
-            f"Discoverable attributes: {', '.join(self.discoverable_attributes)}\n"
+            f"Run options:\n{'\n'.join(options_str)}"
         )
+        # TODO: add some info log for the log file's start?
 
     def get_option(self, edb_source: str) -> Opt:
         opt = self.disc.get(edb_source)
 
         if not opt:
-            opt = self.disc["default"]
+            # find default override
+            if edb_source in EDB_ID or edb_source in EDB_ID_OTHER:
+                opt = self.disc.get('default.ids')
+            elif edb_source in INDEXED_ATTRIBUTES:
+                # attributes other than ID:
+                opt = self.disc.get('default.common_attributes')
+            else:
+                opt = self.disc.get('default.other_attributes')
+
+        if not opt:
+            # ultimate default, everything is False
+            # this is present only when [default.other_attributes] is missing from the options file
+            opt = Opt(edb_source)
         return opt
 
 
-def _to_options(overrides: dict|str=None) -> dict[str, Opt]:
+def _to_options(overrides: dict | str=None) -> dict[str, Opt]:
     if isinstance(overrides, str):
         # file path
         overrides = toml_load(overrides)
@@ -114,6 +123,11 @@ def _to_options(overrides: dict|str=None) -> dict[str, Opt]:
     #     return {}
 
     opts = {}
-    for k, v in overrides.items():
-        opts[k] = Opt(**v)
+    for edb_source, opt in overrides.items():
+        if edb_source == 'default':
+            # nested option (default.*)
+            for k, v in opt.items():
+                opts['default.' + k] = Opt(k, **v)
+        else:
+            opts[edb_source] = Opt(edb_source, **opt)
     return opts

@@ -1,8 +1,11 @@
+import csv
+import json
 import logging
-import sys
+import os.path
 from argparse import ArgumentParser
 
-from discovery import discover
+from discovery import discover, output
+
 
 if __name__ == "__main__":
     parser = ArgumentParser()
@@ -26,9 +29,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--out",
-        default='./discovery.json',
         type=str,
-        # default="./data/database_config.toml",
         help=""
     )
     parser.add_argument(
@@ -71,5 +72,24 @@ if __name__ == "__main__":
         log_file=args.log,
         log_level=log_level
     )
-    for run in runs:
-        run.run_discovery()
+
+    options = runs[0].options
+    if args.out:
+        _, ext = os.path.splitext(args.out)
+
+        # TODO: CLI option: out file type? csv, tsv, jsonl, parquet, duckdb, etc?
+        match ext:
+            case ".csv":
+                writer = output.CSVWriter(args.out, fieldnames=options.result_attributes)
+            case ".tsv":
+                writer = output.CSVWriter(args.out, fieldnames=options.result_attributes, delimiter="\t", quoting=csv.QUOTE_NONE, lineterminator="\n")
+            case _, ".json", ".jsonl", ".jsonlines":
+                writer = output.JSONLinesWriter(args.out)
+    else:
+        writer = output.STDWriter()
+
+    with writer as oh:
+        for run in runs:
+            run.run_discovery()
+
+            oh.write(run.meta)

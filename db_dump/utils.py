@@ -11,8 +11,10 @@ if sys.version_info > (3, 10):
         with open(os.path.abspath(fn), 'rb') as fh:
             return tomllib.load(fh)
 else:
-    import toml_load
-    toml_load = toml
+    import toml
+    def toml_load(fn):
+        with open(os.path.abspath(fn), 'rb') as fh:
+            return toml.loads(fh.read())
 
 
 def get_argparser():

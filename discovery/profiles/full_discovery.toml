@@ -1,43 +1,39 @@
-[default]
-discoverable = true
+[default.ids]
+cache_enabled = true
 fetch_api = false
-cache_enabled = false
-cache_api_result = false
+keep_in_result = true
+
+[default.common_attributes]
+# names, formula, smiles, inchi, inchikey, mass, mi_mass, charge, logp
+keep_in_result = true
+
+[default.other_attributes]
+# default for any other attribute
+keep_in_result = true
+
+# -------------------------------
 
 [hmdb]
-discoverable = true
-fetch_api = true
 cache_enabled = true
-cache_api_result = false
+fetch_api = true
+keep_in_result = true
 
 [chebi]
-discoverable = true
-fetch_api = true
 cache_enabled = true
-cache_api_result = false
+fetch_api = true
+keep_in_result = true
 
 [lipmaps]
-discoverable = true
-fetch_api = true
 cache_enabled = true
-cache_api_result = false
+fetch_api = true
+keep_in_result = true
 
 [pubchem]
-# Pubchem in full_discovery mode assumes that the user has inserted a DB dump file
-discoverable = true
-fetch_api = true
 cache_enabled = true
-cache_api_result = false
+fetch_api = true
+keep_in_result = true
 
 [kegg]
-# KEGG in full_discovery mode assumes that the user has inserted a DB dump file
-discoverable = true
-fetch_api = true
 cache_enabled = true
-cache_api_result = false
-
-[cas]
-discoverable = true
-fetch_api = false
-cache_enabled = false
-cache_api_result = false
+fetch_api = true
+keep_in_result = true
