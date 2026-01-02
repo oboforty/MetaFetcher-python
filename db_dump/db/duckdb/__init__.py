@@ -79,13 +79,13 @@ class DuckDBBulkInserter:
                     print(self.con.execute(f"DESCRIBE {table_name}").fetchall())
 
     def bulk_insert(self, iterable: Iterable):
-        prog = PrintProgress("{dt}sec Inserting (batch: {iter})  {spinner}")
+        prog = PrintProgress("{dt} Inserting (batch: {iter})  {spinner}")
 
         for b, (insert_type, batch) in enumerate(pyarrow_batches(iterable, batch_size=self.batch_size, edb_sources=self.edb_sources)):
             prog.print_progress(b)
 
             if insert_type == INS_INVIDX:
-                self.con.execute("INSERT INTO inverted_idx SELECT * FROM batch")
+                self.con.execute("INSERT OR IGNORE INTO inverted_idx SELECT * FROM batch")
 
             if insert_type == INS_RECORD:
                 self.con.execute("INSERT INTO external_metabolites SELECT * FROM batch")
@@ -115,7 +115,7 @@ def pyarrow_batches(dict_iter, edb_sources, batch_size=100000):
         record_buffer.append({
             "db_source": db_source,
             "db_id": db_id,
-            "content": json.dumps(record),
+            "content": json.dumps(record, cls=FlatUniqueListJSONEncoder),
         })
 
         # Metabolite record table
@@ -160,3 +160,18 @@ def pyarrow_batches(dict_iter, edb_sources, batch_size=100000):
     if invidx_buffer:
         yield INS_INVIDX, pa.Table.from_pylist(invidx_buffer, SCHEMA_INVIDX)
         invidx_buffer.clear()
+
+
+class FlatUniqueListJSONEncoder(json.JSONEncoder):
+    def encode(self, obj):
+        if not isinstance(obj, dict):
+            return super().encode(obj)
+
+        normalized = {}
+        for k, v in obj.items():
+            if isinstance(v, list):
+                normalized[k] = list(set(v))
+            else:
+                normalized[k] = v
+
+        return super().encode(normalized)

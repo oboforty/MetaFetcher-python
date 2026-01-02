@@ -8,7 +8,10 @@ EDB_SOURCES = set(map(lambda x: x[4:], filter(lambda x: x.startswith('edb_'), os
 
 # TODO: glycan databases are excluded, but idk if they should be part
 #       glycan, glytoucan, kegg_glycan
+# TODO: substance databases are excluded
+#       pubchem substance ID, brenda, brenda ligand, massbank
 # TODO: same for peptide DBs
+#       ?
 
 # EDBSource = Enum("EDBSource", {x: x for x in EDB_SOURCES})
 
@@ -20,11 +23,9 @@ EDB_SOURCES_OTHER = {
 
     # these were automatically discovered from parsing ChEBI's DB dump!
     "knapsack",
-    "brenda_ligand",
     "comptox",
     "nmrshiftdb",
     "reaxys",
-    "brenda",
     "bindingdb",
     "metacyc",
     "beilstein",
@@ -41,7 +42,6 @@ EDB_SOURCES_OTHER = {
     "molbase",
     "vsdb",
     "carotenoids",
-    "massbank",
     "smid",
     "ymdb",
     "ecmdb",

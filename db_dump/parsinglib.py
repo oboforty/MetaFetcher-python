@@ -1,7 +1,9 @@
 import math
+from collections import UserDict
 from decimal import Decimal
 from itertools import chain
 from typing import Callable, Iterator
+
 
 _PADDINGS = {
     'hmdb_id': 'HMDB',
@@ -35,32 +37,39 @@ _REPLACE_CHARS = {
 } | {i: ' ' for i in range(1, 32)}
 
 
-class MultiDict(dict):
+class MultiDict(UserDict):
     """
     A dict-like object that tries to keep added items scalar
     """
-
     def append(self, key, value):
-        if (oldval := self.get(key)) is not None:
+        if (oldval := self.data.get(key)) is not None:
             # there are multiple entries in buffer, store them in a list
             if not isinstance(oldval, list):
                 oldval = [oldval]
-                self.__setitem__(key, oldval)
+                self.data[key] = oldval
 
             oldval.append(value)
         else:
-            self.__setitem__(key, value)
+            self.data[key] = value
 
     def extend(self, key, value: list | set | Iterator):
-        if isinstance(value, (list, tuple, set)):
-            for val in value:
-                self.append(key, val)
-        else:
-            self.append(key, value)
+        for x in iter_scalars(value):
+            self.append(key, x)
 
     def update(self, dict2, **kwargs) -> None:
-        for k,v in dict2.items():
-            self.extend(k, v)
+        for key, value in dict2.items():
+            for x in iter_scalars(value):
+                self.append(key, x)
+
+    def as_dict(self):
+        return self.data
+        # d = {}
+        # for k, v in self.data.items():
+        #     if isinstance(v, set):
+        #         v = list(v)
+        #     d[k] = v
+        #
+        # return d
 
 
 def strip_attr(v: list | set | str, prefix):
@@ -255,3 +264,14 @@ def isnan(value):
         pass
 
     return False
+
+
+def iter_scalars(arr_or_prim):
+    """
+    Yields either a scalar type or iterates a collection of the same type
+    """
+    if isinstance(arr_or_prim, (list, tuple, set)):
+        for x in arr_or_prim:
+            yield x
+    else:
+        yield arr_or_prim

@@ -23,8 +23,7 @@ def get_argparser():
     parser.add_argument(
         "in_file",
         type=str,
-        help="",
-        required=True
+        help=""
     )
     parser.add_argument(
         "--out",
@@ -35,7 +34,6 @@ def get_argparser():
     )
     parser.add_argument(
         "-v", "--verbose",
-        type=bool,
         action="store_true",
         default=False,
         help="Enable verbose output"
@@ -49,7 +47,6 @@ def get_argparser():
 
     parser.add_argument(
         "--cardinality",
-        tye=bool,
         action="store_true",
         default=False,
         help="Instead of insertion, does a dry run and collects cardinality statistics"
@@ -60,8 +57,8 @@ def get_argparser():
 
 class PrintProgress:
     def __init__(self, tpl=None):
-        self.start()
         self.tstart = None
+        self.start()
         self.print_called = 0
 
         if tpl is None:

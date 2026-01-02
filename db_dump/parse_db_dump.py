@@ -23,7 +23,7 @@ def parse_dump_db(
         'external_metabolites',
         'inverted_idx',
     ], edb_sources=edb_sources)
-    db.truncate(dump_parser.id)
+    # db.truncate(dump_parser.id)
 
     print("Looking for External IDs: ", edb_sources)
 

@@ -60,7 +60,7 @@ class KeggApiFetcher(Process):
                     ids_in_query = set()
                     async for data in parse_kegg_async(resp.content):
                         ids_in_query.add(data['entry'])
-                        yield data
+                        yield data.as_dict()
 
                     if self.app.debug:
                         ids_missing = bulk_ids_set - ids_in_query

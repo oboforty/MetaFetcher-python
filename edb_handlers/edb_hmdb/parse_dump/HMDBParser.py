@@ -56,4 +56,4 @@ class HMDBParser:
 
         data["db_source"] = "hmdb"
         data["db_id"] = data["hmdb_id"]
-        yield data
+        yield data.as_dict()

@@ -40,12 +40,10 @@ class MetaboliteRepository:
         SELECT db_source, db_id
         FROM inverted_idx
         WHERE {where_clause_1}
-        --WHERE referrer_source = $src AND referrer_id = $id
-        UNION ALL
+        UNION
         SELECT referrer_source AS db_source, referrer_id AS db_id
         FROM inverted_idx
         WHERE {where_clause_2}
-        --WHERE db_source = $src AND db_id = $id;
     """
 
     Q_EDB = """
@@ -56,6 +54,9 @@ class MetaboliteRepository:
       ON edb.db_source = idx.db_source
      AND edb.db_id     = idx.db_id;
     """
+
+    #         --WHERE referrer_source = $src AND referrer_id = $id
+    #         --WHERE db_source = $src AND db_id = $id;
 
     def __init__(self, file: str):
         if not os.path.exists(file):
@@ -97,6 +98,16 @@ class MetaboliteRepository:
             where_clause_2=clause.format(attr_val=attr, attr_col="db"),
         )
         return self.Q_EDB.format(idx_query=sql)
+
+    def count(self, edb_source=None):
+        if edb_source is not None:
+            q1 = self.con.query(f"SELECT count(*) FROM external_metabolites WHERE db_source = '{edb_source}'")
+            q2 = self.con.query(f"SELECT count(*) FROM inverted_idx WHERE db_source = '{edb_source}'")
+        else:
+            q1 = self.con.query(f"SELECT count(*) FROM external_metabolites")
+            q2 = self.con.query(f"SELECT count(*) FROM inverted_idx")
+
+        return q1.fetchone(), q2.fetchone()
 
     def close(self):
         self.con.close()

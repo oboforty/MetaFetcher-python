@@ -35,4 +35,4 @@ class LipidMapsParser:
         data["db_source"] = "lipmaps"
         data["db_id"] = data["lipmaps_id"]
 
-        yield data
+        yield data.as_dict()

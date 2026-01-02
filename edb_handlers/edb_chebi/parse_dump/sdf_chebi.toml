@@ -1,8 +1,0 @@
-[meta]
-tags = ['parser', 'sdf']
-
-#[__proces__]
-#full_debug = no
-
-[debug]
-stop_after = 10

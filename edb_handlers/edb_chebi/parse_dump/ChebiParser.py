@@ -1,6 +1,6 @@
 from db_dump.fileformats.SDFParser import parse_sdf
 from db_dump.parsinglib import (
-    remap_keys, isnan, handle_names, flatten, handle_masses, strip_prefixes, force_list
+    remap_keys, isnan, handle_names, flatten, handle_masses, strip_prefixes, force_list, handle_name
 )
 
 from edb_handlers.edb_chebi.parselib import remap_chebi_links
@@ -25,12 +25,17 @@ class ChebiParser:
 
         # strip molfile
         molfile = data.pop(None, None)
-        # iupac_names = force_list(data.get('IUPAC Names'))
 
         remap_keys(data, _mapping, remap_chebi_links)
-        # data['ch_iupac_name'] = [handle_name(name) for name in iupac_names if name is not None]
 
-        handle_names(data)
+        # handle_names(data)
+        data["names"] = []
+        for name_key in self.cfg['names_mapping']:
+            if names_joined := data.get(name_key.lower()):
+                for name in names_joined.split(";"):
+                    data["names"].append(handle_name(name))
+        data["names"] = list(set(data["names"]))
+
         strip_prefixes(data)
         flatten(data, 'description')
         handle_masses(data)
@@ -46,12 +51,12 @@ class ChebiParser:
             data['charge'] = None
 
         if 'chebi_id_alt' in data and data['chebi_id_alt']:
-            data['chebi_id_alt'] = list(map(lambda x: x.removeprefix("CHEBI:"), force_list(data['chebi_id_alt'])))
+            data['chebi_id_alt'] = set(map(lambda x: x.removeprefix("CHEBI:"), force_list(data['chebi_id_alt'])))
 
         self.generated += 1
 
         data["db_source"] = "chebi"
         data["db_id"] = data["chebi_id"]
 
-        yield data
+        yield data.as_dict()
 

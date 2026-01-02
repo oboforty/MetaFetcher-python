@@ -4,16 +4,11 @@ tags = ['parser', 'dbsave']
 #[settings]
 #chebi_attr_etc = ['quality','chebi_star','lipidmaps_class_id','ch_iupac_name']
 
+names_mapping = ["IUPAC_NAME", "SYNONYM", "ChEBI NAME"]
+
 [attribute_mapping]
 'chebi id' = 'chebi_id'
 'secondary chebi id' = 'chebi_id_alt'
-
-'chebi name' = 'names'
-'iupac names' = 'names'
-'iupac_name' = 'names'
-'ch_iupac_name' = 'names'
-'synonyms' = 'names'
-'synonym' = 'names'
 
 formulae = 'formula'
 inchi = 'inchi'
@@ -40,23 +35,6 @@ definition = 'description'
 
 "wikipedia" = "wiki_id"
 'wikipedia database links' = 'wiki_id'
-
-#'bkms-react database links' = 'bkms_react_id'
-#'brenda database links' = '_id'
-#'reaxys registry numbers' = 'reaxys_id'
-#'beilstein registry numbers' = 'beilstein_id'
-#'kegg drug database links' = 'kegg_drug_id'
-#'gmelin registry numbers' = 'gmelin_id'
-#'pubmed central database links' = 'pubmed_central_id"
-#'kegg glycan database links' = 'kegg_glycan_id"
-# these are auto-mapped:
-#'pubchem database links' = 'pubchem_id'
-#'hmdb database links' = 'hmdb_id'
-#'chemspider database links' = 'chemspider_id'
-#'pdb database links' = 'pdb_id'
-#'uniprot database links' = 'uniprot_id'
-#'swisslipids database links' = 'swisslipids_id'
-#'drugbank database links' = 'drugbank_id'
 
 star = 'chebi_star'
 chebi_star = 'chebi_star'
