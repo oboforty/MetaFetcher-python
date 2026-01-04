@@ -4,7 +4,8 @@ tags = ['parser', 'dbsave']
 #[settings]
 #chebi_attr_etc = ['quality','chebi_star','lipidmaps_class_id','ch_iupac_name']
 
-names_mapping = ["IUPAC_NAME", "SYNONYM", "ChEBI NAME"]
+[names_mapping]
+names = ["IUPAC_NAME", "SYNONYM", "ChEBI NAME"]
 
 [attribute_mapping]
 'chebi id' = 'chebi_id'

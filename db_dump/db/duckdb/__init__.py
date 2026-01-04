@@ -46,6 +46,9 @@ class DuckDBBulkInserter:
         self.tables = tables
         self.edb_sources = edb_sources
 
+        self.inserted_records = 0
+        self.inserted_ids = 0
+
         if not self.tables:
             self.tables = []
 
@@ -81,7 +84,7 @@ class DuckDBBulkInserter:
     def bulk_insert(self, iterable: Iterable):
         prog = PrintProgress("{dt} Inserting (batch: {iter})  {spinner}")
 
-        for b, (insert_type, batch) in enumerate(pyarrow_batches(iterable, batch_size=self.batch_size, edb_sources=self.edb_sources)):
+        for b, (insert_type, batch) in enumerate(self.pyarrow_batches(iterable, batch_size=self.batch_size, edb_sources=self.edb_sources)):
             prog.print_progress(b)
 
             if insert_type == INS_INVIDX:
@@ -91,6 +94,7 @@ class DuckDBBulkInserter:
                 self.con.execute("INSERT INTO external_metabolites SELECT * FROM batch")
 
         prog.close()
+        prog.print_final(f"Done! Took: {{dt}}\nInserted records: {self.inserted_records}, inserted ids: {self.inserted_ids}")
 
     def truncate(self, edb_source=None):
         if edb_source is None:
@@ -103,63 +107,69 @@ class DuckDBBulkInserter:
     def close(self):
         self.con.close()
 
+    def pyarrow_batches(self, dict_iter, edb_sources, batch_size=100000):
+        record_buffer = []
+        invidx_buffer = []
 
-def pyarrow_batches(dict_iter, edb_sources, batch_size=100000):
-    record_buffer = []
-    invidx_buffer = []
+        self.inserted_records = 0
+        self.inserted_ids = 0
 
-    for record in dict_iter:
-        db_source = record.pop("db_source")
-        db_id = record.pop("db_id")
+        for record in dict_iter:
+            db_source = record.pop("db_source")
+            db_id = record.pop("db_id")
 
-        record_buffer.append({
-            "db_source": db_source,
-            "db_id": db_id,
-            "content": json.dumps(record, cls=FlatUniqueListJSONEncoder),
-        })
+            record_buffer.append({
+                "db_source": db_source,
+                "db_id": db_id,
+                "content": json.dumps(record, cls=FlatUniqueListJSONEncoder),
+            })
 
-        # Metabolite record table
-        if len(record_buffer) >= batch_size:
+            # Metabolite record table
+            if len(record_buffer) >= batch_size:
+                yield INS_RECORD, pa.Table.from_pylist(record_buffer, SCHEMA_RECORD)
+                self.inserted_records += len(record_buffer)
+                record_buffer.clear()
+
+            # TODO: @later -- separate idx tables:
+            #           handle mass, mi_mass, charge
+            #           handle MOL3d / MOL2d
+            # todo: @later -- handle 2ndary (can go to inverted idx table)
+
+            # Inverted Index table
+            for ref_attr in edb_sources:
+                ext_ids = record.get(ref_attr)
+                if ext_ids is None:
+                    continue
+                ref_source = ref_attr.removesuffix('_id')
+
+                if not isinstance(ext_ids, (list, set, tuple)):
+                    ext_ids = [ext_ids]
+
+                for ext_id in ext_ids:
+                    invidx_buffer.append({
+                        "referrer_source": ref_source,
+                        "referrer_id": ext_id.lower(),
+
+                        "db_source": db_source,
+                        "db_id": db_id.lower(),
+
+                        # TODO: determine if 2ndary index
+                    })
+
+                    if len(invidx_buffer) >= batch_size:
+                        yield INS_INVIDX, pa.Table.from_pylist(invidx_buffer, SCHEMA_INVIDX)
+                        self.inserted_ids += len(invidx_buffer)
+                        invidx_buffer.clear()
+
+        if record_buffer:
             yield INS_RECORD, pa.Table.from_pylist(record_buffer, SCHEMA_RECORD)
+            self.inserted_records += len(record_buffer)
             record_buffer.clear()
 
-        # TODO: @later -- separate idx tables:
-        #           handle mass, mi_mass, charge
-        #           handle MOL3d / MOL2d
-        # todo: @later -- handle 2ndary (can go to inverted idx table)
-
-        # Inverted Index table
-        for ref_attr in edb_sources:
-            ext_ids = record.get(ref_attr)
-            if ext_ids is None:
-                continue
-            ref_source = ref_attr.removesuffix('_id')
-
-            if not isinstance(ext_ids, (list, set, tuple)):
-                ext_ids = [ext_ids]
-
-            for ext_id in ext_ids:
-                invidx_buffer.append({
-                    "referrer_source": ref_source,
-                    "referrer_id": ext_id.lower(),
-
-                    "db_source": db_source,
-                    "db_id": db_id.lower(),
-
-                    # TODO: determine if 2ndary index
-                })
-
-                if len(invidx_buffer) >= batch_size:
-                    yield INS_INVIDX, pa.Table.from_pylist(invidx_buffer, SCHEMA_INVIDX)
-                    invidx_buffer.clear()
-
-    if record_buffer:
-        yield INS_RECORD, pa.Table.from_pylist(record_buffer, SCHEMA_RECORD)
-        record_buffer.clear()
-
-    if invidx_buffer:
-        yield INS_INVIDX, pa.Table.from_pylist(invidx_buffer, SCHEMA_INVIDX)
-        invidx_buffer.clear()
+        if invidx_buffer:
+            yield INS_INVIDX, pa.Table.from_pylist(invidx_buffer, SCHEMA_INVIDX)
+            self.inserted_ids += len(invidx_buffer)
+            invidx_buffer.clear()
 
 
 class FlatUniqueListJSONEncoder(json.JSONEncoder):

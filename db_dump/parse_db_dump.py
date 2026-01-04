@@ -34,10 +34,6 @@ def parse_dump_db(
 
     db.bulk_insert(iter_)
 
-    print('@ Done! ', i, time.time() - t1)
-
-    # writer_tasks = [asyncio.create_task(aio_bulk_insert_task(pool, queue, batch_size=batch)) for _ in range(tasks)]
-
 
 def stats_dump_db(*, dump_parser, in_file):
     from edb_handlers.db_sources import INDEXED_ATTRIBUTES

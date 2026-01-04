@@ -101,13 +101,18 @@ class MetaboliteRepository:
 
     def count(self, edb_source=None):
         if edb_source is not None:
-            q1 = self.con.query(f"SELECT count(*) FROM external_metabolites WHERE db_source = '{edb_source}'")
-            q2 = self.con.query(f"SELECT count(*) FROM inverted_idx WHERE db_source = '{edb_source}'")
+            q = self.con.query(f"SELECT count(*) FROM external_metabolites WHERE db_source = '{edb_source}'")
         else:
-            q1 = self.con.query(f"SELECT count(*) FROM external_metabolites")
-            q2 = self.con.query(f"SELECT count(*) FROM inverted_idx")
+            q = self.con.query(f"SELECT count(*) FROM external_metabolites")
+        return q.fetchone()[0]
 
-        return q1.fetchone(), q2.fetchone()
+    def count_indexes(self):
+        q2 = self.con.query(f"""
+            SELECT referrer_source, db_source, count(*)
+            FROM inverted_idx
+            GROUP BY referrer_source, db_source
+        """)
+        return q2.fetchall()
 
     def close(self):
         self.con.close()

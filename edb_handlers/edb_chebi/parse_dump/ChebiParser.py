@@ -30,7 +30,7 @@ class ChebiParser:
 
         # handle_names(data)
         data["names"] = []
-        for name_key in self.cfg['names_mapping']:
+        for name_key in self.cfg['names_mapping']['names']:
             if names_joined := data.get(name_key.lower()):
                 for name in names_joined.split(";"):
                     data["names"].append(handle_name(name))

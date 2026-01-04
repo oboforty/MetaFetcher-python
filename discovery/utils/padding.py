@@ -1,7 +1,10 @@
 _PADDINGS = {
+    'hmdb': 'HMDB',
+    'chebi': 'CHEBI:',
     'hmdb_id': 'HMDB',
     'chebi_id': 'CHEBI:',
-    #'kegg_id': 'C',
+    #'kegg': 'C',
+    'lipmaps': 'LM',
     'lipmaps_id': 'LM',
     'inchi': 'InChI='
 }

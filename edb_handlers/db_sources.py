@@ -38,7 +38,7 @@ EDB_SOURCES_OTHER = {
     "foodb",
     "golm",
     "um_bbd",
-    "alan_wood's_pesticides_id",
+    # "alan_wood's_pesticides_id",
     "molbase",
     "vsdb",
     "carotenoids",
@@ -60,13 +60,15 @@ EDB_ID_OTHER = set(map(lambda x: x+'_id', iter(EDB_SOURCES_OTHER)))
 EDB_ID = set(map(lambda x: x+'_id', iter(EDB_SOURCES)))
 
 CHEM_FLOAT_PROPERTY = {'mass', 'mi_mass', "charge"}
-CHEM_STRUCT_PROPERTY = {'formula', 'inchi', 'inchikey', 'smiles'}
+CHEM_STRUCT_PROPERTY = {'inchi', 'inchikey', 'smiles'}
 CHEM_STRUCT_MULTI_DIM_PROPERTY = {"mol", "mol2d"} # todo: what else?
 
-INDEXED_ATTRIBUTES = EDB_ID | {"names"} | CHEM_STRUCT_PROPERTY | CHEM_FLOAT_PROPERTY | EDB_ID_OTHER
+INDEXED_ATTRIBUTES = EDB_ID | CHEM_STRUCT_PROPERTY | CHEM_FLOAT_PROPERTY | EDB_ID_OTHER
 
 COMMON_ATTRIBUTES = {
     *INDEXED_ATTRIBUTES,
+    "names",
+    'formula',
     "description"
 }
 

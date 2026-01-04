@@ -44,15 +44,18 @@ class HMDBParser:
 
         if 'hmdb_id_alt' in data and data['hmdb_id_alt']:
             # strip obvious redundant IDs and only store actual secondaries
-            id2nd = set(map(lambda x: x.removeprefix("HMDB").translate(_key_mapping).strip(), force_list(etc['hmdb_id_alt'])))
+            id2nd = set(map(lambda x: x.removeprefix("HMDB").translate(_key_mapping).strip(), force_list(data['hmdb_id_alt'])))
             id2nd -= {data['hmdb_id'], '', ' ', '  '}
             id2nd = {replace_obvious_hmdb_id(x) for x in id2nd}
 
             data['hmdb_id_alt'] = list(id2nd)
 
         if 'kegg_id' in data:
-            # clean kegg_id of whitespaces as some hmdb has it
-            data['kegg_id'] = data['kegg_id'].strip()
+            if data['kegg_id'] is None:
+                del data['kegg_id']
+            else:
+                # clean kegg_id of whitespaces as some hmdb has it
+                data['kegg_id'] = data['kegg_id'].strip()
 
         data["db_source"] = "hmdb"
         data["db_id"] = data["hmdb_id"]

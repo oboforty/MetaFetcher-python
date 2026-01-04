@@ -47,7 +47,7 @@ def parse_xml(filepath: str, parse_options: dict):
                         #assert len(child) == 0
                         data.append(tag_name, child.text)
 
-        yield data.as_dict()
+        yield data
 
         elem.clear(keep_tail=True)
 

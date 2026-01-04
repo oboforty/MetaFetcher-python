@@ -179,9 +179,15 @@ class DiscoveryAlg:
         logger.debug(f"Discovery finished! Took {round(dt)}s --------\n")
 
     def set_input(self, record_input: dict):
+        # remove paddings
+        for edb_tag, edb_id in list(record_input.items()):
+            record_input[edb_tag] = depad_id(edb_id, edb_tag)
+
+        # meta is where all IDs and attributes are collected
         self.meta = MetaboliteIndex(record_input)
         self.meta.allowed_keys = self.options.result_attributes
 
+        # start the alg with an initial enqueue
         edb_ref_input: EDB_REF = ("root_input", "-")
         self.enqueue_novel_ids(edb_ref_input, record_input)
 

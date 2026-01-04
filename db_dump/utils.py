@@ -85,5 +85,12 @@ class PrintProgress:
 
         print("\r", self.tpl.format(iter=i, spinner=pb, dt=dt, **kwargs), end="")
 
+    def print_final(self, msg):
+        dt = None
+        if self.tstart:
+            dt = time.strftime('%H:%M:%S', time.gmtime(time.time() - self.tstart))
+
+        print("\n" + msg.format(dt=dt))
+
     def close(self):
         print("")
