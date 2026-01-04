@@ -1,58 +1,95 @@
 # Metabolite discovery
 
-    python -m discovery chebi 17303
+The discovery module allows you to query and discover metabolite information from the imported database archives. It can search across multiple databases and resolve cross-references between them.
 
+## Basic usage
 
-## Options file
+Query a metabolite by database source and ID:
 
+```bash
+python.exe -m discovery hmdb HMDB0000010
+```
 
-For each metabolite DB stored in the `.db` file, you can control how they are discovered. You can control this in a `.toml` options file, and provide that config to the command.
+The command accepts database source and ID pairs. Supported database sources include: `chebi`, `hmdb`, `lipidmaps`, `pubchem`, `kegg`, and others.
 
-For example:
+## Configuration options
 
-    python -m discovery chebi 17303 -v --options ./my_profile.toml
+You can control how each database is queried using a TOML configuration file. This allows you to specify whether to use the local `.db` cache, fetch from external APIs, or exclude certain attributes from results.
 
-By default, you can use the built-in profiles in `ROOT/discovery/profiles/`
+### Using a custom options file
 
-    python -m discovery chebi 17303 -v --options ./discovery/profiles/full_discovery.toml
+```bash
+python.exe -m discovery hmdb HMDB0000010 -v --options ./my_profile.toml
+```
 
+### Using built-in profiles
 
----
+Built-in configuration profiles are available in `discovery/profiles/`:
+
+```bash
+python.exe -m discovery hmdb HMDB0000010 -v --options ./discovery/profiles/full_discovery.toml
+```
 
 ## Discovery options
 
-    [hmdb]
-    discoverable = true
-    fetch_api = true
-    cache_enabled = true
-    cache_api_result = false
-    keep_in_result = true
+Each database source (or attribute) can be configured with the following options:
 
-* **discoverable** - enables that the attribute (hmdb in the example) can be queried. Enable this either if you plan to use the `.db` cache or API fetches.
-* **cache_enabled** - if enabled, metabolite entries are queried from the `.db` cache
-* **fetch_api** - if enabled, and metabolite entries are not found in the `.db` cache, the external database's API is fetched instead.
-  * APIs are only supported for ChEBI, HMDB, Lipidmaps, Pubchem and KEGG!
-* ~~**cache_api_result** - not supported feature yet~~
-* **keep_in_result** - when disabled, both discovered and undiscovered attributes will not be present in the output.
-  * For example, you can ignore `pubmed_id` using this option.
+```toml
+[hmdb]
+discoverable = true
+fetch_api = true
+cache_enabled = true
+cache_api_result = false
+keep_in_result = true
+```
 
+### Option descriptions
 
-Since there's an abundance in metabolite databases, you can control the default behaviour for all (which are unspecified in the options file). For example:
+* **discoverable** - Enables querying for this attribute. Set to `true` if you plan to use either the `.db` cache or API fetches.
+* **cache_enabled** - When enabled, metabolite entries are queried from the local `.db` cache first.
+* **fetch_api** - When enabled, if metabolite entries are not found in the `.db` cache, the external database's API is queried instead.
+  * API support is available for: ChEBI, HMDB, LipidMaps, PubChem, and KEGG.
+* **cache_api_result** - *(Not yet supported)*
+* **keep_in_result** - When disabled, both discovered and undiscovered attributes are excluded from the output.
+  * Useful for filtering out unwanted attributes (e.g., `pubmed_id`).
 
-    [default]
-    discoverable = true
-    fetch_api = false
-    cache_enabled = true
-    cache_api_result = false
-    keep_in_result = true
+## Default behavior
 
-This example will only look in the local `.db` file, and not try the APIs.
+You can set default behavior for all unspecified database sources using a `[default]` section:
 
-### Other useful examples
+```toml
+[default]
+discoverable = true
+fetch_api = false
+cache_enabled = true
+cache_api_result = false
+keep_in_result = true
+```
 
-    [names]
-    discoverable = true
-    fetch_api = false
-    cache_enabled = false
-    cache_api_result = false
-    keep_in_result = true
+This configuration will only query the local `.db` file and will not attempt API fetches for unspecified sources.
+
+## Example configurations
+
+### Local cache only
+
+Query only from the local `.db` archive, no API calls:
+
+```toml
+[default]
+discoverable = true
+fetch_api = false
+cache_enabled = true
+keep_in_result = true
+```
+
+### Names attribute
+
+Example configuration for the `names` attribute:
+
+```toml
+[names]
+discoverable = true
+fetch_api = false
+cache_enabled = false
+keep_in_result = true
+```

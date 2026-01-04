@@ -1,61 +1,72 @@
-# 1. Importing metabolite database dumps
+# Importing metabolite database dumps
 
-Please note that we provide a full snapshot of the processed database dump files, so you can skip this whole page and rely on our cloud-provided `.parquet` files for normalizing metabolite compound IDs.
+This guide explains how to import downloaded database dump files into the local DuckDB archive (`.db` file). The imported data will be used for metabolite discovery queries.
 
-See XXX chapter, if you intend to skip these intermediary steps.
+> **Note:** We provide a full snapshot of processed database dump files. If you prefer to skip these steps, you can rely on our cloud-provided `.parquet` files for normalizing metabolite compound IDs.
 
+## Prerequisites
 
-## 1.1. Download easily accessible metabolite database dumps & import
+1. Ensure you have downloaded the database dump files (see [Downloading database dumps](download_db_dumps.md))
+2. All dump files should be placed in `./data/dumps`
+3. Navigate to the project's root directory before running commands
 
-By default, all files are stored in `./data/dumps`. Make sure to download the dump files here.
+## Import commands
 
-Also as a first step, navigate to this project's root folder to run the scripts.
-
+All import commands write to the same output file (`./data/dumps/edb_dumps.db`). Each command appends data to this file, so you can run them sequentially.
 
 ### ChEBI
-https://www.ebi.ac.uk/chebi/downloads
 
-Download any of the SDF formats: https://ftp.ebi.ac.uk/pub/databases/chebi/SDF/
+Import ChEBI SDF dump file:
 
-    python -m edb_handlers.edb_chebi.parse_dump ./data/dumps/chebi.sdf.gz --out ./data/dumps/edb_dumps.db --batch 10000
+```bash
+python.exe -m edb_handlers.edb_chebi.parse_dump ./data/dumps/chebi.sdf.gz --out ./data/dumps/edb_dumps.db --batch 20000
+```
 
-This will parse ChEBI's DB dump into a duckdb `.db` format. These files will be needed for Step 2.
+This parses ChEBI's database dump and imports it into the DuckDB archive format.
 
 ### HMDB
-https://www.hmdb.ca/downloads
 
-Download the metabolite data in XML format.
+Import HMDB XML dump file:
 
-    python -m edb_handlers.edb_hmdb.parse_dump ./data/dumps/hmdb_metabolites.zip --out ./data/dumps/edb_dumps.db --batch 10000
+```bash
+python.exe -m edb_handlers.edb_hmdb.parse_dump ./data/dumps/hmdb_metabolites.zip --out ./data/dumps/edb_dumps.db --batch 20000
+```
 
-This will parse HMDB's DB dump into a duckdb `.db` format. These files will be needed for Step 2.
+This parses HMDB's database dump and imports it into the DuckDB archive format.
 
 ### LipidMaps
-https://www.lipidmaps.org/databases/lmsd/download
 
-Download the LMSD SDF format: https://www.lipidmaps.org/files/?file=LMSD&ext=sdf.zip
+Import LipidMaps SDF dump file:
 
-    python -m edb_handlers.edb_lipmaps.parse_dump ./data/dumps/LMSD.sdf.zip --out ./data/dumps/edb_dumps.db --batch 10000
+```bash
+python.exe -m edb_handlers.edb_lipmaps.parse_dump ./data/dumps/LMSD.sdf.zip --out ./data/dumps/edb_dumps.db --batch 20000
+```
 
-This will parse LipidMap's DB dump into a duckdb `.db` format. These files will be needed for Step 2.
+This parses LipidMaps' database dump and imports it into the DuckDB archive format.
 
+## Verifying imports
 
----
+After importing database dumps, verify the contents of your `.db` archive:
 
+```bash
+python.exe .\edb_handlers\check_dumps.py
+```
 
-## 1.2. Download KEGG & Pubchem dump files
+This command displays:
+- Record counts for each database source
+- Inverse index counts showing cross-references between databases
 
-If you intend to use the KEGG metabolome database's compounds as well, compile a list of KEGG IDs (based on the databases imported in ./data/dumps/edb_dumps.db)
+## Additional databases
 
-### Pubchem
+### KEGG and PubChem
 
-- `./data/dumps/pubchem_ids.txt`
+KEGG and PubChem require additional setup steps:
 
-@TODO compile ID list & import cmd
+- **PubChem:** Requires compiling an ID list file at `./data/dumps/pubchem_ids.txt`
+- **KEGG:** Requires compiling an ID list file at `./data/dumps/kegg_ids.txt`
 
-### KEGG
+Import commands for these databases are currently under development.
 
-- `./data/dumps/kegg_ids.txt`
+## Next steps
 
-@TODO compile ID list & import cmd
-
+Once your database dumps are imported and verified, you can proceed to [Metabolite discovery](discovery_options.md) to query metabolites using the imported data.
