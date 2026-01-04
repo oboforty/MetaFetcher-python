@@ -1,7 +1,5 @@
-from metcore.parsinglib import (
-    MultiDict,
-    get_id_from_url, strip_attr, try_flatten,
-)
+
+from db_dump.parsinglib import MultiDict, try_flatten, strip_attr, get_id_from_url
 
 
 def parse_pubchem(edb_id, content, cont_refs, _mapping):

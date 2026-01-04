@@ -1,0 +1,39 @@
+[default.ids]
+cache_enabled = true
+fetch_api = false
+keep_in_result = true
+
+[default.common_attributes]
+# names, formula, smiles, inchi, inchikey, mass, mi_mass, charge, logp
+keep_in_result = true
+
+[default.other_attributes]
+# default for any other attribute
+keep_in_result = true
+
+# -------------------------------
+
+[hmdb]
+cache_enabled = true
+fetch_api = true
+keep_in_result = true
+
+[chebi]
+cache_enabled = true
+fetch_api = true
+keep_in_result = true
+
+[lipmaps]
+cache_enabled = true
+fetch_api = true
+keep_in_result = true
+
+[pubchem]
+cache_enabled = true
+fetch_api = true
+keep_in_result = true
+
+[kegg]
+cache_enabled = true
+fetch_api = true
+keep_in_result = true

@@ -1,9 +1,7 @@
-import toml
-import os.path
 from abc import ABCMeta, abstractmethod
 
+from utils import toml_load
 from metcore.views import MetaboliteConsistent
-from pipebro import SettingWrapper
 
 
 class ApiClientBase(metaclass=ABCMeta):
@@ -15,7 +13,7 @@ class ApiClientBase(metaclass=ABCMeta):
 
     def load_mapping(self, edb_source):
         # load mapping files
-        s = SettingWrapper(toml.load(self.MAPPING_FILE))
+        s = SettingWrapper(toml_load(self.MAPPING_FILE))
 
         self._mapping = s['attribute_mapping']
         self._important_attr = set(s.get('attributes', {}).get(f'{edb_source}_attr_etc', []))

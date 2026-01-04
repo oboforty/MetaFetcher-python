@@ -1,7 +1,6 @@
 import re
 
-from metcore.parsinglib import MultiDict
-
+from db_dump.parsinglib import MultiDict
 
 KEGG_END = '///'
 KEGG_START = "ENTRY"
@@ -29,7 +28,7 @@ def parse_kegg(stream):
 
         if new_entry:
             # kegg entry ended, save and yield
-            yield data
+            yield data.as_dict()
             data = MultiDict()
 
 async def parse_kegg_async(stream):
@@ -41,11 +40,11 @@ async def parse_kegg_async(stream):
 
         if new_entry:
             # kegg entry ended, save and yield
-            yield data
+            yield data.as_dict()
             data = MultiDict()
 
 
-def parse_kegg_line(line, state, data):
+def parse_kegg_line(line, state, data: MultiDict):
     """
 
     :param line: line to be parsed

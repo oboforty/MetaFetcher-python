@@ -1,0 +1,24 @@
+[meta]
+tags = ['parser', 'dbsave']
+
+[settings]
+lipidmaps_attr_etc=[]
+
+[attribute_mapping]
+lm_id = 'lipmaps_id'
+name = 'names'
+systematic_name = 'names'
+synonyms = 'names'
+abbreviation = 'names'
+
+exact_mass = 'mi_mass'
+inchi_key = 'inchikey'
+pubchem_cid = 'pubchem_id'
+pubchem_compound_id = 'pubchem_id'
+
+wikipedia_id = 'wiki_id'
+
+# category category
+# main_class main_class
+# sub_class sub_class
+# class_level4 = 'lvl4_class'

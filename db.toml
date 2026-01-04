@@ -1,6 +1,6 @@
 [db]
 autocommit = 'no'
-conn = 'postgresql'
+db_type = "parquet"
 
 [driver_asyncpg]
 pool_size = [10, 10]
@@ -12,10 +12,11 @@ statement_cache_size = 0 #300
 
 [driver_sqlalchemy]
 
-[driver_sqlite]
-
 [conn_postgresql]
 dsn = 'postgres://postgres:postgres@localhost/mfdb'
 
 [conn_sqlite]
 dsn = 'sqlite:///mfdb_discovery.db'
+
+[conn_parquet]
+file = "mfdb.parquet"

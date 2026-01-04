@@ -3,13 +3,11 @@ import math
 import os
 import time
 
-from eme.entities import load_settings
 from pipebro import pipe_builder
 from pipebro.ProcessImpl import JSONLinesSaver
-from edb_builder.process.apifetcher.KeggApiFetcher import KeggApiFetcher
 
+from edb_handlers.edb_kegg.dbb.KeggApiFetcher import KeggApiFetcher
 
-DB_CFG = load_settings(os.path.dirname(__file__) + '/db.ini')
 cfg_path = os.path.join(os.path.dirname(__file__), 'config')
 TABLE_NAME = 'edb_tmp'
 

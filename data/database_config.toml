@@ -1,0 +1,4 @@
+db_type = "duckdb"
+
+[duckdb]
+edb_file = "./data/dumps/edb_dumps.db"
